@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SolarWatch.Controllers
 {
@@ -13,7 +14,7 @@ namespace SolarWatch.Controllers
         }
 
         [HttpGet("Get")]
-        public ActionResult<DateTime> Get(DateOnly date, string city) 
+        public ActionResult<DateTime> Get([Required] DateOnly date, [Required] string city) 
         {
             throw new NotImplementedException();
         }
