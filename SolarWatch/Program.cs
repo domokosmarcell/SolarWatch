@@ -1,4 +1,6 @@
 
+using SolarWatch.Services;
+
 namespace SolarWatch
 {
     public class Program
@@ -13,6 +15,9 @@ namespace SolarWatch
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddSingleton<IGeocodeProvider, GeocodeProvider>();
+            builder.Services.AddSingleton<IGeocodeJsonProcessor, GeocodeJsonProcessor>();
 
             var app = builder.Build();
 
