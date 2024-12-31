@@ -14,7 +14,7 @@ namespace SolarWatch.Services
         {
             var url = $"https://api.sunrise-sunset.org/json?lat={lat}&lng={lon}&date={date}&tzid={tzid}";
             using var client = new WebClient();
-            _logger.LogInformation("Calling Sunrise/Sunset API with url: {url}", url);
+            _logger.LogDebug("Calling Sunrise/Sunset API with url: {url}", url);
             return client.DownloadString(url);
         }
     }
