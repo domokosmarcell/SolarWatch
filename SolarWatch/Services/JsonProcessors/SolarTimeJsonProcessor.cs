@@ -1,7 +1,7 @@
 ﻿
 using System.Text.Json;
 
-namespace SolarWatch.Services
+namespace SolarWatch.Services.JsonProcessors
 {
     public class SolarTimeJsonProcessor : ISolarTimeJsonProcessor
     {
@@ -9,7 +9,7 @@ namespace SolarWatch.Services
         {
             JsonDocument json = JsonDocument.Parse(solarTimeInfo);
             var solarTimeInfoElement = json.RootElement;
-            if (solarTimeInfoElement.GetProperty("status").GetString() != "OK") 
+            if (solarTimeInfoElement.GetProperty("status").GetString() != "OK")
                 throw new Exception("Some problem(s) occured during communicating with the Sunrise/Sunset Api!");
 
             var sunrise = GetTimeFromDateTimeOffset(solarTimeInfoElement.GetProperty("sunrise").GetDateTimeOffset());
@@ -18,7 +18,7 @@ namespace SolarWatch.Services
             return (sunrise, sunset);
         }
 
-        private static TimeOnly GetTimeFromDateTimeOffset(DateTimeOffset time) 
+        private static TimeOnly GetTimeFromDateTimeOffset(DateTimeOffset time)
         {
             DateTime dateTimeFormat = time.DateTime;
             return TimeOnly.FromDateTime(dateTimeFormat);

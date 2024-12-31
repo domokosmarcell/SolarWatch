@@ -1,5 +1,6 @@
 
 using SolarWatch.Services;
+using SolarWatch.Services.JsonProcessors;
 
 namespace SolarWatch
 {

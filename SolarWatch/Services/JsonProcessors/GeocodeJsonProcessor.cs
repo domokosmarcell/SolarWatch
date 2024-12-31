@@ -1,7 +1,7 @@
 ﻿
 using System.Text.Json;
 
-namespace SolarWatch.Services
+namespace SolarWatch.Services.JsonProcessors
 {
     public class GeocodeJsonProcessor : IGeocodeJsonProcessor
     {
