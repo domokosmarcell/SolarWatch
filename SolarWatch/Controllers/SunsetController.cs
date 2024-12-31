@@ -9,7 +9,7 @@ namespace SolarWatch.Controllers
     [Route("api/[controller]")]
     public class SunsetController : ControllerBase
     {
-        private ILogger<SunsetController> _logger;
+        private readonly ILogger<SunsetController> _logger;
         private readonly IGeocodeProvider _geocodeProvider;
         private readonly IGeocodeJsonProcessor _geocodeJsonProcessor;
         private readonly ISolarTimeProvider _solarTimeProvider;
