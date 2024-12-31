@@ -2,6 +2,6 @@
 {
     public interface ISolarTimeProvider
     {
-        string GetSolarTimes(double lat, double lon, DateOnly date, string tzid);
+        string GetSolarTimes(float lat, float lon, DateOnly date, string tzid);
     }
 }

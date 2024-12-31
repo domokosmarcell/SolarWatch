@@ -12,17 +12,35 @@ namespace SolarWatch.Controllers
         private readonly ILogger<SunriseController> _logger;
         private readonly IGeocodeProvider _geocodeProvider;
         private readonly IGeocodeJsonProcessor _geocodeJsonProcessor;
-        public SunriseController(ILogger<SunriseController> logger, IGeocodeProvider geocodeProvider, IGeocodeJsonProcessor geocodeJsonProcessor)
+        private readonly ISolarTimeProvider _solarTimeProvider;
+        private readonly ISolarTimeJsonProcessor _solarTimeJsonProcessor;
+        public SunriseController(ILogger<SunriseController> logger, IGeocodeProvider geocodeProvider,
+            IGeocodeJsonProcessor geocodeJsonProcessor, ISolarTimeProvider solarTimeProvider, ISolarTimeJsonProcessor solarTimeJsonProcessor)
         {
             _logger = logger;
             _geocodeProvider = geocodeProvider;
             _geocodeJsonProcessor = geocodeJsonProcessor;
+            _solarTimeProvider = solarTimeProvider;
+            _solarTimeJsonProcessor = solarTimeJsonProcessor;
         }
 
         [HttpGet("Get")]
-        public ActionResult<TimeOnly> Get([Required] DateOnly date, [Required] string city, [Required] string tzid) 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<TimeOnly> Get([Required] DateOnly date, [Required] string city, string? tzid) 
         {
-            throw new NotImplementedException();
+            try
+            {
+                (float lat, float lon) geocode = _geocodeJsonProcessor.ProcessGeocodeInfo(_geocodeProvider.GetGeocode(city));
+                (TimeOnly sunrise, TimeOnly sunset) solarTimes = _solarTimeJsonProcessor.ProcessSolarTimeInfo(_solarTimeProvider.GetSolarTimes(geocode.lat, geocode.lon, date, tzid));
+                _logger.LogInformation("Getting sunrise time was successful!");
+                return Ok(solarTimes.sunrise);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error getting the sunrise time for the specified city at the provided date!");
+                return BadRequest("Error getting the sunrise time for the specified city at the provided date!");
+            }
         }
     }
 }

@@ -2,6 +2,6 @@
 {
     public interface IGeocodeJsonProcessor
     {
-        (double, double) ProcessGeocodeInfo(string geocodeInfo);
+        (float, float) ProcessGeocodeInfo(string geocodeInfo);
     }
 }
