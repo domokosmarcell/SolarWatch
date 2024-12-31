@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
+using SolarWatch.Services;
+using SolarWatch.Services.JsonProcessors;
 
 namespace SolarWatch.Controllers
 {
@@ -7,14 +9,18 @@ namespace SolarWatch.Controllers
     [Route("api/[controller]")]
     public class SunriseController : ControllerBase
     {
-        private ILogger<SunriseController> _logger;
-        public SunriseController(ILogger<SunriseController> logger)
+        private readonly ILogger<SunriseController> _logger;
+        private readonly IGeocodeProvider _geocodeProvider;
+        private readonly IGeocodeJsonProcessor _geocodeJsonProcessor;
+        public SunriseController(ILogger<SunriseController> logger, IGeocodeProvider geocodeProvider, IGeocodeJsonProcessor geocodeJsonProcessor)
         {
             _logger = logger;
+            _geocodeProvider = geocodeProvider;
+            _geocodeJsonProcessor = geocodeJsonProcessor;
         }
 
         [HttpGet("Get")]
-        public ActionResult<TimeOnly> Get([Required] DateOnly date, [Required] string city) 
+        public ActionResult<TimeOnly> Get([Required] DateOnly date, [Required] string city, [Required] string tzid) 
         {
             throw new NotImplementedException();
         }
