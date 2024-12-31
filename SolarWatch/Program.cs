@@ -18,7 +18,9 @@ namespace SolarWatch
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddSingleton<IGeocodeProvider, GeocodeProvider>();
+            builder.Services.AddSingleton<ISolarTimeProvider, SolarTimeProvider>();
             builder.Services.AddSingleton<IGeocodeJsonProcessor, GeocodeJsonProcessor>();
+            builder.Services.AddSingleton<ISolarTimeJsonProcessor, SolarTimeJsonProcessor>();
 
             var app = builder.Build();
 

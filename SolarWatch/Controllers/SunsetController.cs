@@ -14,7 +14,7 @@ namespace SolarWatch.Controllers
         }
 
         [HttpGet("Get")]
-        public ActionResult<TimeOnly> Get([Required] DateOnly date, [Required] string city)
+        public ActionResult<TimeOnly> Get([Required] DateOnly date, [Required] string city, [Required] string tzid)
         {
             throw new NotImplementedException();
         }

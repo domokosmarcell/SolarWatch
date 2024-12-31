@@ -10,11 +10,11 @@ namespace SolarWatch.Services
             _logger = logger;
         }
         
-        public string GetSolarTimes(double lat, double lon, DateOnly date)
+        public string GetSolarTimes(double lat, double lon, DateOnly date, string tzid)
         {
-            var url = $"https://api.sunrise-sunset.org/json?lat={lat}&lng={lon}&date={date}";
+            var url = $"https://api.sunrise-sunset.org/json?lat={lat}&lng={lon}&date={date}&tzid={tzid}";
             using var client = new WebClient();
-            _logger.LogInformation($"Calling Sunrise/Sunset API with url: {url}");
+            _logger.LogInformation("Calling Sunrise/Sunset API with url: {url}", url);
             return client.DownloadString(url);
         }
     }
