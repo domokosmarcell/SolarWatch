@@ -5,12 +5,12 @@ namespace SolarWatch.Services.JsonProcessors
 {
     public class GeocodeJsonProcessor : IGeocodeJsonProcessor
     {
-        public (double, double) ProcessGeocodeInfo(string geocodeInfo)
+        public (float, float) ProcessGeocodeInfo(string geocodeInfo)
         {
             JsonDocument json = JsonDocument.Parse(geocodeInfo);
             var geocodeInfoElement = json.RootElement[0];
-            double lat = geocodeInfoElement.GetProperty("lat").GetDouble();
-            double lon = geocodeInfoElement.GetProperty("lon").GetDouble();
+            float lat = geocodeInfoElement.GetProperty("lat").GetSingle();
+            float lon = geocodeInfoElement.GetProperty("lon").GetSingle();
 
             return (lat, lon);
         }

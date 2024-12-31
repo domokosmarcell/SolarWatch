@@ -9,11 +9,12 @@ namespace SolarWatch.Services.JsonProcessors
         {
             JsonDocument json = JsonDocument.Parse(solarTimeInfo);
             var solarTimeInfoElement = json.RootElement;
+            var resultsElement = solarTimeInfoElement.GetProperty("results");
             if (solarTimeInfoElement.GetProperty("status").GetString() != "OK")
                 throw new Exception("Some problem(s) occured during communicating with the Sunrise/Sunset Api!");
 
-            var sunrise = GetTimeFromDateTimeOffset(solarTimeInfoElement.GetProperty("sunrise").GetDateTimeOffset());
-            var sunset = GetTimeFromDateTimeOffset(solarTimeInfoElement.GetProperty("sunset").GetDateTimeOffset());
+            var sunrise = GetTimeFromDateTimeOffset(resultsElement.GetProperty("sunrise").GetDateTimeOffset());
+            var sunset = GetTimeFromDateTimeOffset(resultsElement.GetProperty("sunset").GetDateTimeOffset());
 
             return (sunrise, sunset);
         }
