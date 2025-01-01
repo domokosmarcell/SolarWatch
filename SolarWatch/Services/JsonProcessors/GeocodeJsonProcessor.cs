@@ -9,7 +9,7 @@ namespace SolarWatch.Services.JsonProcessors
         {
             JsonDocument json = JsonDocument.Parse(geocodeInfo);
             var geocodeInfoElement = json.RootElement[0];
-            //handle the case when the array is empty
+            //handle the case when the array is empty or when there is nothing to geocode
             float lat = geocodeInfoElement.GetProperty("lat").GetSingle();
             float lon = geocodeInfoElement.GetProperty("lon").GetSingle();
 
