@@ -13,7 +13,7 @@ namespace SolarWatch.Services
         }
         public string GetGeocode(string city)
         {
-
+            //handle case when the city parameter is null or empty string or whitespace
             var url = $"http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=1&appid={_configuration["ApiKeys:OpenWeatherMap"]}";
             using var client = new WebClient();
             _logger.LogDebug("Calling GeoCoding API with url: {url}", url);

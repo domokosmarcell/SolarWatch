@@ -12,7 +12,7 @@ namespace SolarWatch.Services.JsonProcessors
             var resultsElement = solarTimeInfoElement.GetProperty("results");
             if (solarTimeInfoElement.GetProperty("status").GetString() != "OK")
                 throw new Exception("Some problem(s) occured during communicating with the Sunrise/Sunset Api!");
-
+            //handle case with invalid date and invalid request
             var sunrise = GetTimeFromDateTimeOffset(resultsElement.GetProperty("sunrise").GetDateTimeOffset());
             var sunset = GetTimeFromDateTimeOffset(resultsElement.GetProperty("sunset").GetDateTimeOffset());
 
