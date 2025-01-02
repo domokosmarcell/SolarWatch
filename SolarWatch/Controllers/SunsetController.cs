@@ -31,15 +31,15 @@ namespace SolarWatch.Controllers
         {
             try
             {
-                (float lat, float lon) geocode = _geocodeJsonProcessor.ProcessGeocodeInfo(_geocodeProvider.GetGeocode(city));
-                (TimeOnly sunrise, TimeOnly sunset) solarTimes = _solarTimeJsonProcessor.ProcessSolarTimeInfo(_solarTimeProvider.GetSolarTimes(geocode.lat, geocode.lon, date, tzid));
+                (float lat, float lon) geocode = _geocodeJsonProcessor.ProcessGeocodeInfo(_geocodeProvider.GetGeocode(city), city);
+                (TimeOnly sunrise, TimeOnly sunset) solarTimes = _solarTimeJsonProcessor.ProcessSolarTimeInfo(_solarTimeProvider.GetSolarTimes(geocode.lat, geocode.lon, date, tzid), date);
                 _logger.LogInformation("Getting sunset time was successful!");
                 return Ok(solarTimes.sunset);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Error getting the sunset time for the specified city at the provided date!");
-                return BadRequest("Error getting the sunset time for the specified city at the provided date!");
+                return BadRequest(e.Message);
             }
         }
     }
