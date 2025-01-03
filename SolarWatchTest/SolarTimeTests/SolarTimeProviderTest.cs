@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SolarWatchTest
+namespace SolarWatchTest.SolarTimeTests
 {
-    public class SolarTimeJsonProcessorTest
+    public class SolarTimeProviderTest
     {
     }
 }

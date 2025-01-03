@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SolarWatchTest
+namespace SolarWatchTest.GeocodeTests
 {
-    public class SolarTimeProviderTest
+    public class GeocodeJsonProcessorTest
     {
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
-using SolarWatch.Services;
+using SolarWatch.Services.ApiProviders;
 using SolarWatch.Services.JsonProcessors;
 
 namespace SolarWatch.Controllers

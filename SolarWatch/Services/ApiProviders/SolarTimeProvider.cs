@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Globalization;
 
-namespace SolarWatch.Services
+namespace SolarWatch.Services.ApiProviders
 {
     public class SolarTimeProvider : ISolarTimeProvider
     {
@@ -10,7 +10,7 @@ namespace SolarWatch.Services
         {
             _logger = logger;
         }
-        
+
         public string GetSolarTimes(float lat, float lon, DateOnly date, string? tzid)
         {
             var formattedLat = lat.ToString(CultureInfo.InvariantCulture);

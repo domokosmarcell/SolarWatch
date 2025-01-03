@@ -1,5 +1,4 @@
-
-using SolarWatch.Services;
+using SolarWatch.Services.ApiProviders;
 using SolarWatch.Services.JsonProcessors;
 
 namespace SolarWatch

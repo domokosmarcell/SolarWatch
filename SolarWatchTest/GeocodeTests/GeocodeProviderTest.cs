@@ -1,4 +1,4 @@
-namespace SolarWatchTest
+namespace SolarWatchTest.GeocodeTests
 {
     public class GeocodeProviderTest
     {
