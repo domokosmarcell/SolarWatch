@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace SolarWatchTest
 {
+    [TestFixture]
     public class SunriseControllerTest
     {
     }

@@ -27,7 +27,7 @@ namespace SolarWatch.Controllers
         [HttpGet("Get")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<TimeOnly> Get([Required] DateOnly date, [Required] string city, string? tzid)
+        public ActionResult<TimeOnly> GetSunsetTime([Required] DateOnly date, [Required] string city, string? tzid)
         {
             try
             {
