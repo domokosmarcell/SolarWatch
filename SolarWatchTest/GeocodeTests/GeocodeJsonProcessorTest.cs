@@ -18,6 +18,22 @@ namespace SolarWatchTest.GeocodeTests
         }
 
         [Test]
+        public void ProcessGeocodeInfoThrowsExceptionIfApiResponseIsAnErrorObj()
+        {
+            var cityInput = "London,England,GB";
+            var exampleErrorFromApi = @"{
+                ""cod"": 401,
+                ""message"": ""Invalid API key. Please see https://openweathermap.org/faq#error401 for more info.""
+            }";
+            var returnedErrorMessage = "Invalid API key. Please see https://openweathermap.org/faq#error401 for more info.";
+
+            var result = Assert.Throws<Exception>( () => _geocodeJsonProcessor.ProcessGeocodeInfo(exampleErrorFromApi, cityInput));
+
+            Assert.That(result.Message, Is.EqualTo(returnedErrorMessage));
+        }
+
+
+        [Test]
         public void ProcessGeocodeInfoThrowsExceptionIfGeocodeInfoIsAnEmptyArray()
         {
             var nonexistentCityInput = "asd";
