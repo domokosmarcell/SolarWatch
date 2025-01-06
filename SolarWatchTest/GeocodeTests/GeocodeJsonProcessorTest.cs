@@ -10,7 +10,7 @@ namespace SolarWatchTest.GeocodeTests
     [TestFixture]
     public class GeocodeJsonProcessorTest
     {
-        private IGeocodeJsonProcessor _geocodeJsonProcessor;
+        private GeocodeJsonProcessor _geocodeJsonProcessor;
         [SetUp]
         public void Setup()
         {

@@ -1,5 +1,4 @@
-﻿using System.Net;
-using System.Globalization;
+﻿using System.Globalization;
 using SolarWatch.Services.WebClientWrapper;
 
 namespace SolarWatch.Services.ApiProviders

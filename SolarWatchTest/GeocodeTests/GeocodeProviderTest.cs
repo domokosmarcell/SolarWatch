@@ -12,7 +12,7 @@ namespace SolarWatchTest.GeocodeTests
         private Mock<ILogger<GeocodeProvider>> _loggerMock;
         private Mock<IConfiguration> _configurationMock;
         private Mock<IWebClient> _webClientMock;
-        private GeocodeProvider _geocodeProviderMock;
+        private GeocodeProvider _geocodeProvider;
 
 
         [SetUp]
@@ -21,7 +21,7 @@ namespace SolarWatchTest.GeocodeTests
             _loggerMock = new Mock<ILogger<GeocodeProvider>>();
             _configurationMock = new Mock<IConfiguration>();
             _webClientMock = new Mock<IWebClient>();
-            _geocodeProviderMock = new GeocodeProvider(_loggerMock.Object, _configurationMock.Object, _webClientMock.Object);
+            _geocodeProvider = new GeocodeProvider(_loggerMock.Object, _configurationMock.Object, _webClientMock.Object);
 
         }
 
@@ -33,7 +33,7 @@ namespace SolarWatchTest.GeocodeTests
             _configurationMock.Setup(x => x["ApiKeys:OpenWeatherMap"]).Returns(fakeApiKey);
             _webClientMock.Setup(x => x.DownloadString(It.Is<string>(url => url.Contains(cityInput) && url.Contains(fakeApiKey)))).Throws(new Exception());
 
-            var result = Assert.Throws<Exception>(() => _geocodeProviderMock.GetGeocode(cityInput));
+            var result = Assert.Throws<Exception>(() => _geocodeProvider.GetGeocode(cityInput));
 
             Assert.That(result, Is.InstanceOf<Exception>());
         }
@@ -47,7 +47,7 @@ namespace SolarWatchTest.GeocodeTests
             _configurationMock.Setup(x => x["ApiKeys:OpenWeatherMap"]).Returns(fakeApiKey);
             _webClientMock.Setup(x => x.DownloadString(It.Is<string>(url => url.Contains(cityInput) && url.Contains(fakeApiKey)))).Returns(fakeResponse);
 
-            var result = _geocodeProviderMock.GetGeocode(cityInput);
+            var result = _geocodeProvider.GetGeocode(cityInput);
 
             Assert.That(result, Is.EqualTo(fakeResponse));
         }
