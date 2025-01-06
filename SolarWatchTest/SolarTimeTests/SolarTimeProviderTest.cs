@@ -7,7 +7,6 @@ using Moq;
 using SolarWatch.Services.ApiProviders;
 using SolarWatch.Services.WebClientWrapper;
 using Microsoft.Extensions.Logging;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Globalization;
 
 namespace SolarWatchTest.SolarTimeTests
