@@ -29,7 +29,7 @@ namespace SolarWatch.Services.JsonProcessors
         {
             var todayPlusOneYear = DateOnly.FromDateTime(DateTime.Now.AddYears(1));
             if (date > todayPlusOneYear)
-                throw new Exception($"The date that you had to provide was invalid!\nGive a date lower than {todayPlusOneYear} !");
+                throw new Exception($"The date that you had to provide was invalid!\nGive a date lower than or equal to {todayPlusOneYear} !");
         }
         private static void ValidateResponseStatus(JsonElement solarTimeInfoElement)
         {

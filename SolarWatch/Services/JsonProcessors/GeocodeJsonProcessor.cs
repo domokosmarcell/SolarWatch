@@ -10,6 +10,7 @@ namespace SolarWatch.Services.JsonProcessors
             JsonDocument json = JsonDocument.Parse(geocodeInfo);
             JsonElement jsonRootElement = json.RootElement;
             
+            CheckIfApiResponseIsAnErrorObject(jsonRootElement);
             ValidateTheExistenceOfCities(jsonRootElement);
             ValidateCityNameCorrectnessInResponse(jsonRootElement, city);
 
@@ -19,6 +20,16 @@ namespace SolarWatch.Services.JsonProcessors
             
             return (lat, lon);
         }
+
+        private static void CheckIfApiResponseIsAnErrorObject(JsonElement jsonRootElement)
+        {
+            if(jsonRootElement.ValueKind != JsonValueKind.Array)
+            {
+                var errorMessage = jsonRootElement.GetProperty("message").GetString();
+                throw new Exception(errorMessage);
+            }
+        }
+
 
 
         private static void ValidateTheExistenceOfCities(JsonElement jsonRootElement)

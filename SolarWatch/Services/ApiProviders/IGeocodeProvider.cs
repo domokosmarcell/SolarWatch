@@ -1,4 +1,4 @@
-﻿namespace SolarWatch.Services
+﻿namespace SolarWatch.Services.ApiProviders
 {
     public interface IGeocodeProvider
     {
