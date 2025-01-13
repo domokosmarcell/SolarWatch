@@ -27,12 +27,12 @@ namespace SolarWatch.Controllers
         [HttpGet("Get")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<TimeOnly> GetSunsetTime([Required] DateOnly date, [Required] string city, string? tzid)
+        public async Task<ActionResult<TimeOnly>> GetSunsetTime([Required] DateOnly date, [Required] string city, string? tzid)
         {
             try
             {
-                (float lat, float lon) geocode = _geocodeJsonProcessor.ProcessGeocodeInfo(_geocodeProvider.GetGeocode(city), city);
-                (TimeOnly sunrise, TimeOnly sunset) solarTimes = _solarTimeJsonProcessor.ProcessSolarTimeInfo(_solarTimeProvider.GetSolarTimes(geocode.lat, geocode.lon, date, tzid), date);
+                (float lat, float lon) geocode = _geocodeJsonProcessor.ProcessGeocodeInfo(await _geocodeProvider.GetGeocode(city), city);
+                (TimeOnly sunrise, TimeOnly sunset) solarTimes = _solarTimeJsonProcessor.ProcessSolarTimeInfo(await _solarTimeProvider.GetSolarTimes(geocode.lat, geocode.lon, date, tzid), date);
                 _logger.LogInformation("Getting sunset time was successful!");
                 return Ok(solarTimes.sunset);
             }
