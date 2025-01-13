@@ -1,4 +1,4 @@
-﻿using SolarWatch.Services.WebClientWrapper;
+﻿using SolarWatch.Services.HttpClientWrapper;
 
 namespace SolarWatch.Services.ApiProviders
 {
@@ -6,19 +6,19 @@ namespace SolarWatch.Services.ApiProviders
     {
         private readonly ILogger<GeocodeProvider> _logger;
         private readonly IConfiguration _configuration;
-        private readonly IWebClient _client;
+        private readonly IHttpClient _client;
 
-        public GeocodeProvider(ILogger<GeocodeProvider> logger, IConfiguration configuration, IWebClient client)
+        public GeocodeProvider(ILogger<GeocodeProvider> logger, IConfiguration configuration, IHttpClient client)
         {
             _logger = logger;
             _configuration = configuration;
             _client = client;
         }
-        public string GetGeocode(string city)
+        public async Task<string> GetGeocode(string city)
         {
             var url = $"http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=1&appid={_configuration["ApiKeys:OpenWeatherMap"]}";
             _logger.LogDebug("Calling GeoCoding API with url: {url}", url);
-            return _client.DownloadString(url);
+            return await _client.GetStringAsync(url);
         }
     }
 }

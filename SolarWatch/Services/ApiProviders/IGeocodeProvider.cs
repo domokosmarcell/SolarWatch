@@ -2,6 +2,6 @@
 {
     public interface IGeocodeProvider
     {
-        string GetGeocode(string city);
+        Task<string> GetGeocode(string city);
     }
 }

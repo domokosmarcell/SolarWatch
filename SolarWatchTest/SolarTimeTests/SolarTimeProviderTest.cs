@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Moq;
 using SolarWatch.Services.ApiProviders;
-using SolarWatch.Services.WebClientWrapper;
 using Microsoft.Extensions.Logging;
 using System.Globalization;
+using SolarWatch.Services.HttpClientWrapper;
 
 namespace SolarWatchTest.SolarTimeTests
 {
@@ -15,7 +15,7 @@ namespace SolarWatchTest.SolarTimeTests
     public class SolarTimeProviderTest
     {
         private Mock<ILogger<SolarTimeProvider>> _loggerMock;
-        private Mock<IWebClient> _webClientMock;
+        private Mock<IHttpClient> _webClientMock;
         private SolarTimeProvider _solarTimeProvider;
         private static readonly float _randomLatitude = 42.123f;
         private static readonly float _randomLongitude = 16.456f;
@@ -29,14 +29,14 @@ namespace SolarWatchTest.SolarTimeTests
         public void Setup()
         {
             _loggerMock = new Mock<ILogger<SolarTimeProvider>>();
-            _webClientMock = new Mock<IWebClient>();
+            _webClientMock = new Mock<IHttpClient>();
             _solarTimeProvider = new SolarTimeProvider(_loggerMock.Object, _webClientMock.Object);
         }
 
         [Test]
         public void GetSolarTimesThrowsExceptionIfApiCallFails() 
         {
-            _webClientMock.Setup(x => x.DownloadString(It.Is<string>((url) => url.Contains(FormattedLat) && url.Contains(FormattedLon) && url.Contains(FormattedDate)))).Throws(new Exception());
+            _webClientMock.Setup(x => x.GetStringAsync(It.Is<string>((url) => url.Contains(FormattedLat) && url.Contains(FormattedLon) && url.Contains(FormattedDate)))).Throws(new Exception());
 
             var result = Assert.Throws<Exception>(() => _solarTimeProvider.GetSolarTimes(_randomLatitude, _randomLongitude, _dummyDate, _defaultTzid));
 
@@ -56,7 +56,7 @@ namespace SolarWatchTest.SolarTimeTests
                 ""tzid"": ""UTC""
             }";
             
-            _webClientMock.Setup(x => x.DownloadString(It.Is<string>((url) => url.Contains(FormattedLat) && url.Contains(FormattedLon) && url.Contains(FormattedDate)))).Returns(fakeResponse);
+            _webClientMock.Setup(x => x.GetStringAsync(It.Is<string>((url) => url.Contains(FormattedLat) && url.Contains(FormattedLon) && url.Contains(FormattedDate)))).Returns(fakeResponse);
 
             var result = _solarTimeProvider.GetSolarTimes(_randomLatitude, _randomLongitude, _dummyDate, _defaultTzid);
 

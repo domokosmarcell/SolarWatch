@@ -1,6 +1,6 @@
 using SolarWatch.Services.ApiProviders;
+using SolarWatch.Services.HttpClientWrapper;
 using SolarWatch.Services.JsonProcessors;
-using SolarWatch.Services.WebClientWrapper;
 
 namespace SolarWatch
 {
@@ -21,7 +21,7 @@ namespace SolarWatch
             builder.Services.AddSingleton<ISolarTimeProvider, SolarTimeProvider>();
             builder.Services.AddSingleton<IGeocodeJsonProcessor, GeocodeJsonProcessor>();
             builder.Services.AddSingleton<ISolarTimeJsonProcessor, SolarTimeJsonProcessor>();
-            builder.Services.AddSingleton<IWebClient, WebClientWrapper>();
+            builder.Services.AddSingleton<IHttpClient, HttpClientWrapper>();
 
             var app = builder.Build();
 
