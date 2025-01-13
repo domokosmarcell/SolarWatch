@@ -43,63 +43,63 @@ namespace SolarWatchTest
         }
 
         [Test]
-        public void GetSunsetTimeReturnsBadRequestIfGeocodeProviderFails()
+        public async Task GetSunsetTimeReturnsBadRequestIfGeocodeProviderFails()
         {
-            _geocodeProviderMock.Setup(x => x.GetGeocode(_cityInput)).Throws(new Exception());
+            _geocodeProviderMock.Setup(x => x.GetGeocode(_cityInput)).ThrowsAsync(new Exception());
 
-            var result = _controller.GetSunsetTime(_dateInput, _cityInput, _tzidInput);
+            var result = await _controller.GetSunsetTime(_dateInput, _cityInput, _tzidInput);
 
             Assert.That(result.Result, Is.InstanceOf(typeof(BadRequestObjectResult)));
         }
 
         [Test]
-        public void GetSunsetTimeReturnsBadRequestIfGeocodeJsonIsNotValid()
+        public async Task GetSunsetTimeReturnsBadRequestIfGeocodeJsonIsNotValid()
         {
-            _geocodeProviderMock.Setup(x => x.GetGeocode(_cityInput)).Returns(_geocodeData);
+            _geocodeProviderMock.Setup(x => x.GetGeocode(_cityInput)).ReturnsAsync(_geocodeData);
             _geocodeJsonProcessorMock.Setup(x => x.ProcessGeocodeInfo(_geocodeData, _cityInput)).Throws(new Exception());
 
-            var result = _controller.GetSunsetTime(_dateInput, _cityInput, _tzidInput);
+            var result = await _controller.GetSunsetTime(_dateInput, _cityInput, _tzidInput);
 
             Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
-        public void GetSunsetTimeReturnsBadRequestIfSolarTimeProviderFails()
+        public async Task GetSunsetTimeReturnsBadRequestIfSolarTimeProviderFails()
         {
-            _geocodeProviderMock.Setup(x => x.GetGeocode(_cityInput)).Returns(_geocodeData);
+            _geocodeProviderMock.Setup(x => x.GetGeocode(_cityInput)).ReturnsAsync(_geocodeData);
             _geocodeJsonProcessorMock.Setup(x => x.ProcessGeocodeInfo(_geocodeData, _cityInput)).Returns(_geocodes);
             _solarTimeProviderMock.Setup(x => x.GetSolarTimes(_geocodes.lat, _geocodes.lon, _dateInput, _tzidInput)).
-                Throws(new Exception());
+                ThrowsAsync(new Exception());
 
-            var result = _controller.GetSunsetTime(_dateInput, _cityInput, _tzidInput);
+            var result = await _controller.GetSunsetTime(_dateInput, _cityInput, _tzidInput);
 
             Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
-        public void GetSunsetTimeReturnsBadRequestIfSolarTimeJsonIsNotValid()
+        public async Task GetSunsetTimeReturnsBadRequestIfSolarTimeJsonIsNotValid()
         {
-            _geocodeProviderMock.Setup(x => x.GetGeocode(_cityInput)).Returns(_geocodeData);
+            _geocodeProviderMock.Setup(x => x.GetGeocode(_cityInput)).ReturnsAsync(_geocodeData);
             _geocodeJsonProcessorMock.Setup(x => x.ProcessGeocodeInfo(_geocodeData, _cityInput)).Returns(_geocodes);
             _solarTimeProviderMock.Setup(x => x.GetSolarTimes(_geocodes.lat, _geocodes.lon, _dateInput, _tzidInput)).
-                Returns(_solarTimeData);
+                ReturnsAsync(_solarTimeData);
             _solarTimeJsonProcessorMock.Setup(x => x.ProcessSolarTimeInfo(_solarTimeData, _dateInput)).Throws<Exception>();
 
-            var result = _controller.GetSunsetTime(_dateInput, _cityInput, _tzidInput);
+            var result = await _controller.GetSunsetTime(_dateInput, _cityInput, _tzidInput);
 
             Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
-        public void GetSunsetTimeReturnsOkResultIfSolarTimeJsonIsValid()
+        public async Task GetSunsetTimeReturnsOkResultIfSolarTimeJsonIsValid()
         {
-            _geocodeProviderMock.Setup(x => x.GetGeocode(_cityInput)).Returns(_geocodeData);
+            _geocodeProviderMock.Setup(x => x.GetGeocode(_cityInput)).ReturnsAsync(_geocodeData);
             _geocodeJsonProcessorMock.Setup(x => x.ProcessGeocodeInfo(_geocodeData, _cityInput)).Returns(_geocodes);
             _solarTimeProviderMock.Setup(x => x.GetSolarTimes(_geocodes.lat, _geocodes.lon, _dateInput, _tzidInput)).
-                Returns(_solarTimeData);
+                ReturnsAsync(_solarTimeData);
             _solarTimeJsonProcessorMock.Setup(x => x.ProcessSolarTimeInfo(_solarTimeData, _dateInput)).Returns(_solarTimes);
 
-            var result = _controller.GetSunsetTime(_dateInput, _cityInput, _tzidInput);
+            var result = await _controller.GetSunsetTime(_dateInput, _cityInput, _tzidInput);
 
             Assert.Multiple(() =>
             {
