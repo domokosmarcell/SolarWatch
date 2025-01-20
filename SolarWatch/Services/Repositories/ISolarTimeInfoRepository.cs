@@ -4,7 +4,7 @@ namespace SolarWatch.Services.Repositories
 {
     public interface ISolarTimeInfoRepository
     {
-        SolarTimeInfo GetByCityAndDate(City city, DateOnly date);
-        int Add(SolarTimeInfo solarTimeInfo);
+        Task<SolarTimeInfo?> GetByCityAndDate(City city, DateOnly date);
+        Task Add(SolarTimeInfo solarTimeInfo);
     }
 }

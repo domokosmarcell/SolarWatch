@@ -4,7 +4,7 @@ namespace SolarWatch.Services.Repositories
 {
     public interface ICityRepository
     {
-        City GetByName(string city);
-        int Add(City city);
+        Task<City?> GetByName(string city);
+        Task Add(City city);
     }
 }
