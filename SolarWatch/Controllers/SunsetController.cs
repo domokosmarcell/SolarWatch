@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SolarWatch.Services.JsonProcessors;
 using SolarWatch.Services.ApiProviders;
+using SolarWatch.Models;
 
 namespace SolarWatch.Controllers
 {
@@ -31,10 +32,10 @@ namespace SolarWatch.Controllers
         {
             try
             {
-                (float lat, float lon) geocode = _geocodeJsonProcessor.ProcessGeocodeInfo(await _geocodeProvider.GetGeocode(city), city);
-                (TimeOnly sunrise, TimeOnly sunset) solarTimes = _solarTimeJsonProcessor.ProcessSolarTimeInfo(await _solarTimeProvider.GetSolarTimes(geocode.lat, geocode.lon, date, tzid), date);
+                City cityInfo = _geocodeJsonProcessor.ProcessGeocodeInfo(await _geocodeProvider.GetGeocode(city), city);
+                SolarTimeInfo solarTimeInfo = _solarTimeJsonProcessor.ProcessSolarTimeInfo(await _solarTimeProvider.GetSolarTimes(cityInfo.Latitude, cityInfo.Longitude, date, tzid), date, cityInfo);
                 _logger.LogInformation("Getting sunset time was successful!");
-                return Ok(solarTimes.sunset);
+                return Ok(solarTimeInfo.Sunset);
             }
             catch (Exception e)
             {

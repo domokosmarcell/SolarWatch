@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
+using SolarWatch.Models;
 using SolarWatch.Services.ApiProviders;
 using SolarWatch.Services.JsonProcessors;
 
@@ -31,10 +32,10 @@ namespace SolarWatch.Controllers
         {
             try
             {
-                (float lat, float lon) geocode = _geocodeJsonProcessor.ProcessGeocodeInfo(await _geocodeProvider.GetGeocode(city), city);
-                (TimeOnly sunrise, TimeOnly sunset) solarTimes = _solarTimeJsonProcessor.ProcessSolarTimeInfo(await _solarTimeProvider.GetSolarTimes(geocode.lat, geocode.lon, date, tzid), date);
+                City cityInfo = _geocodeJsonProcessor.ProcessGeocodeInfo(await _geocodeProvider.GetGeocode(city), city);
+                SolarTimeInfo solarTimeInfo = _solarTimeJsonProcessor.ProcessSolarTimeInfo(await _solarTimeProvider.GetSolarTimes(cityInfo.Latitude, cityInfo.Longitude, date, tzid), date, cityInfo);
                 _logger.LogInformation("Getting sunrise time was successful!");
-                return Ok(solarTimes.sunrise);
+                return Ok(solarTimeInfo.Sunrise);
             }
             catch (Exception e)
             {

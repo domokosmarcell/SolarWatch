@@ -83,7 +83,7 @@ namespace SolarWatchTest
             _geocodeJsonProcessorMock.Setup(x => x.ProcessGeocodeInfo(_geocodeData, _cityInput)).Returns(_geocodes);
             _solarTimeProviderMock.Setup(x => x.GetSolarTimes(_geocodes.lat, _geocodes.lon, _dateInput, _tzidInput)).
                 ReturnsAsync(_solarTimeData);
-            _solarTimeJsonProcessorMock.Setup(x => x.ProcessSolarTimeInfo(_solarTimeData, _dateInput)).Throws<Exception>();
+            _solarTimeJsonProcessorMock.Setup(x => x.ProcessAndCreateSolarTimeInfo(_solarTimeData, _dateInput)).Throws<Exception>();
 
             var result = await _controller.GetSunsetTime(_dateInput, _cityInput, _tzidInput);
 
@@ -97,7 +97,7 @@ namespace SolarWatchTest
             _geocodeJsonProcessorMock.Setup(x => x.ProcessGeocodeInfo(_geocodeData, _cityInput)).Returns(_geocodes);
             _solarTimeProviderMock.Setup(x => x.GetSolarTimes(_geocodes.lat, _geocodes.lon, _dateInput, _tzidInput)).
                 ReturnsAsync(_solarTimeData);
-            _solarTimeJsonProcessorMock.Setup(x => x.ProcessSolarTimeInfo(_solarTimeData, _dateInput)).Returns(_solarTimes);
+            _solarTimeJsonProcessorMock.Setup(x => x.ProcessAndCreateSolarTimeInfo(_solarTimeData, _dateInput)).Returns(_solarTimes);
 
             var result = await _controller.GetSunsetTime(_dateInput, _cityInput, _tzidInput);
 
