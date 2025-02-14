@@ -16,7 +16,7 @@ namespace SolarWatch.Services.JsonProcessors
             var resultsElement = solarTimeInfoElement.GetProperty("results");
             var sunrise = GetTimeFromDateTimeOffset(resultsElement.GetProperty("sunrise").GetDateTimeOffset());
             var sunset = GetTimeFromDateTimeOffset(resultsElement.GetProperty("sunset").GetDateTimeOffset());
-            var tzid = resultsElement.GetProperty("tzid").GetString();
+            var tzid = solarTimeInfoElement.GetProperty("tzid").GetString();
 
             var newSolarTimeInfo = new SolarTimeInfo()
             {

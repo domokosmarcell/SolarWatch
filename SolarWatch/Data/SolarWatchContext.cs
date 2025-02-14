@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using SolarWatch.Models;
-using Microsoft.Extensions.Configuration;
 
 namespace SolarWatch.Data;
 

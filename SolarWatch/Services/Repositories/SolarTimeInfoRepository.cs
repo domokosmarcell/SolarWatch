@@ -18,9 +18,14 @@ namespace SolarWatch.Services.Repositories
             return solarTimeInfo;
         }
 
-        public async Task<SolarTimeInfo?> GetByCityAndDate(City city, DateOnly date)
+        public async Task<SolarTimeInfo?> GetByCityDateAndTzid(City city, DateOnly date, string tzid)
         {
-            return await _context.SolarTimeInfos.Include(x => x.City).FirstOrDefaultAsync(x => x.City.Id == city.Id && x.Date == date);
+            return await _context.SolarTimeInfos.Include(x => x.City).FirstOrDefaultAsync(x => 
+            
+                string.IsNullOrEmpty(tzid)
+                    ? x.City.Id == city.Id && x.Date == date && x.Tzid == "UTC"
+                    : x.City.Id == city.Id && x.Date == date && x.Tzid == tzid
+            );
         }
 
         public async Task<SolarTimeInfo> Update(SolarTimeInfo solarTimeInfo)
