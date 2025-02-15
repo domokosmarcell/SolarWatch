@@ -1,11 +1,12 @@
 ﻿
 using System.Text.Json;
+using SolarWatch.Models;
 
 namespace SolarWatch.Services.JsonProcessors
 {
     public class GeocodeJsonProcessor : IGeocodeJsonProcessor
     {
-        public (float, float) ProcessGeocodeInfo(string geocodeInfo, string city)
+        public City ProcessGeocodeInfo(string geocodeInfo, string city)
         {
             JsonDocument json = JsonDocument.Parse(geocodeInfo);
             JsonElement jsonRootElement = json.RootElement;
@@ -15,10 +16,24 @@ namespace SolarWatch.Services.JsonProcessors
             ValidateCityNameCorrectnessInResponse(jsonRootElement, city);
 
             var geocodeInfoElement = jsonRootElement[0];
+            var name = geocodeInfoElement.GetProperty("name").GetString();
             float lat = geocodeInfoElement.GetProperty("lat").GetSingle();
             float lon = geocodeInfoElement.GetProperty("lon").GetSingle();
-            
-            return (lat, lon);
+            var country = geocodeInfoElement.GetProperty("country").GetString();
+
+            bool isStateExists = geocodeInfoElement.TryGetProperty("state", out JsonElement stateElement);
+            string? state = null;
+            if (isStateExists) state = stateElement.GetString();
+
+            var newCityObject = new City()
+            {
+                Name = name,
+                Latitude = lat,
+                Longitude = lon,
+                State = state,
+                Country = country
+            };
+            return newCityObject;
         }
 
         private static void CheckIfApiResponseIsAnErrorObject(JsonElement jsonRootElement)

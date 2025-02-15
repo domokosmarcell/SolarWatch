@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NuGet.Frameworks;
 using SolarWatch.Services.JsonProcessors;
+using SolarWatch.Models;
 
 namespace SolarWatchTest.SolarTimeTests
 {
@@ -13,11 +13,20 @@ namespace SolarWatchTest.SolarTimeTests
     {
         private SolarTimeJsonProcessor _solarTimeJsonProcessor;
         public static DateOnly MaxValidDate => DateOnly.FromDateTime(DateTime.Now.AddYears(1));
+        private City _city;
 
         [SetUp]
         public void Setup()
         {
             _solarTimeJsonProcessor = new SolarTimeJsonProcessor();
+            _city = new City()
+            {
+                Id = 1,
+                Name = "Paks",
+                Latitude = 46.6229468f,
+                Longitude = 18.8589364f,
+                Country = "HU"
+            };
         }
         [Test]
         public void ProcessSolarTimeInfoThrowsExceptionIfDateIsBiggerThanTodayPlusOneYear()
@@ -40,7 +49,7 @@ namespace SolarWatchTest.SolarTimeTests
                 ""tzid"": ""Europe/Budapest""
             }";
 
-            var result = Assert.Throws<Exception>(() => _solarTimeJsonProcessor.ProcessSolarTimeInfo(fakeSolarTimeInfo, invalidDate));
+            var result = Assert.Throws<Exception>(() => _solarTimeJsonProcessor.ProcessSolarTimeInfo(fakeSolarTimeInfo, invalidDate, _city));
 
             Assert.That(result.Message, Is.EqualTo($"The date that you had to provide was invalid!\nGive a date lower than or equal to {MaxValidDate} !"));
         }
@@ -55,7 +64,7 @@ namespace SolarWatchTest.SolarTimeTests
             }";
             var responseStatus = "UNKNOWN_ERROR";
 
-            var result = Assert.Throws<Exception>(() => _solarTimeJsonProcessor.ProcessSolarTimeInfo(errorResponseObjectFromApi, randomValidDate));
+            var result = Assert.Throws<Exception>(() => _solarTimeJsonProcessor.ProcessSolarTimeInfo(errorResponseObjectFromApi, randomValidDate, _city));
 
             Assert.That(result.Message, Is.EqualTo($"Some problem(s) occurred with the response.\nSunrise/Sunset Api's response status is {responseStatus}."));
         }
@@ -79,11 +88,19 @@ namespace SolarWatchTest.SolarTimeTests
                 ""status"": ""OK"",
                 ""tzid"": ""Europe/Budapest""
             }";
-            (TimeOnly sunrise, TimeOnly sunset) solartimes = (new TimeOnly(07, 24, 31), new TimeOnly(16, 20, 59));
 
-            var result = _solarTimeJsonProcessor.ProcessSolarTimeInfo(fakeSolarTimeInfo, randomValidDate);
+            var validSolarTimeInfo = new SolarTimeInfo()
+            {
+                City = _city,
+                Date = randomValidDate,
+                Sunrise = new TimeOnly(07, 24, 31),
+                Sunset = new TimeOnly(16, 20, 59),
+                Tzid = "Europe/Budapest"
+            };
 
-            Assert.That(result, Is.EqualTo(solartimes));
+            var result = _solarTimeJsonProcessor.ProcessSolarTimeInfo(fakeSolarTimeInfo, randomValidDate, _city);
+
+            Assert.That(result, Is.EqualTo(validSolarTimeInfo));
         }
 
     }

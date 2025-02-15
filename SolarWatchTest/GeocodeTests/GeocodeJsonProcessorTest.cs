@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SolarWatch.Models;
 using SolarWatch.Services.JsonProcessors;
 
 namespace SolarWatchTest.GeocodeTests
@@ -79,10 +80,17 @@ namespace SolarWatchTest.GeocodeTests
                     }
                 ]
                 ";
+            var validCity = new City()
+            {
+                Name = "Paks",
+                Latitude = 46.6229468f,
+                Longitude = 18.8589364f,
+                Country = "HU"
+            };
 
             var result = _geocodeJsonProcessor.ProcessGeocodeInfo(geocodeInfo, cityInput);
 
-            Assert.That(result, Is.EqualTo((46.6229468f, 18.8589364f)));
+            Assert.That(result, Is.EqualTo(validCity));
         }
     }
 }

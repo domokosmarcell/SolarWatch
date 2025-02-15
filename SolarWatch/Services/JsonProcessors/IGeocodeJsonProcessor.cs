@@ -1,7 +1,9 @@
-﻿namespace SolarWatch.Services.JsonProcessors
+﻿using SolarWatch.Models;
+
+namespace SolarWatch.Services.JsonProcessors
 {
     public interface IGeocodeJsonProcessor
     {
-        (float, float) ProcessGeocodeInfo(string geocodeInfo, string city);
+        City ProcessGeocodeInfo(string geocodeInfo, string city);
     }
 }

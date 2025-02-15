@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
+using SolarWatch.Models;
 using SolarWatch.Services.ApiProviders;
 using SolarWatch.Services.JsonProcessors;
+using SolarWatch.Services.Repositories;
 
 namespace SolarWatch.Controllers
 {
@@ -14,14 +16,19 @@ namespace SolarWatch.Controllers
         private readonly IGeocodeJsonProcessor _geocodeJsonProcessor;
         private readonly ISolarTimeProvider _solarTimeProvider;
         private readonly ISolarTimeJsonProcessor _solarTimeJsonProcessor;
+        private readonly ICityRepository _cityRepository;
+        private readonly ISolarTimeInfoRepository _solarTimeInfoRepository;
         public SunriseController(ILogger<SunriseController> logger, IGeocodeProvider geocodeProvider,
-            IGeocodeJsonProcessor geocodeJsonProcessor, ISolarTimeProvider solarTimeProvider, ISolarTimeJsonProcessor solarTimeJsonProcessor)
+            IGeocodeJsonProcessor geocodeJsonProcessor, ISolarTimeProvider solarTimeProvider, ISolarTimeJsonProcessor solarTimeJsonProcessor,
+            ISolarTimeInfoRepository solarTimeInfoRepository, ICityRepository cityRepository)
         {
             _logger = logger;
             _geocodeProvider = geocodeProvider;
             _geocodeJsonProcessor = geocodeJsonProcessor;
             _solarTimeProvider = solarTimeProvider;
             _solarTimeJsonProcessor = solarTimeJsonProcessor;
+            _solarTimeInfoRepository = solarTimeInfoRepository;
+            _cityRepository = cityRepository;
         }
 
         [HttpGet("Get")]
@@ -31,10 +38,20 @@ namespace SolarWatch.Controllers
         {
             try
             {
-                (float lat, float lon) geocode = _geocodeJsonProcessor.ProcessGeocodeInfo(await _geocodeProvider.GetGeocode(city), city);
-                (TimeOnly sunrise, TimeOnly sunset) solarTimes = _solarTimeJsonProcessor.ProcessSolarTimeInfo(await _solarTimeProvider.GetSolarTimes(geocode.lat, geocode.lon, date, tzid), date);
+                City? cityInfo = await _cityRepository.GetByName(city);
+                if (cityInfo == null)
+                {
+                    cityInfo = _geocodeJsonProcessor.ProcessGeocodeInfo(await _geocodeProvider.GetGeocode(city), city);
+                    await _cityRepository.Add(cityInfo);
+                }
+                SolarTimeInfo? solarTimeInfo = await _solarTimeInfoRepository.GetByCityDateAndTzid(cityInfo, date, tzid);
+                if (solarTimeInfo == null)
+                {
+                    solarTimeInfo = _solarTimeJsonProcessor.ProcessSolarTimeInfo(await _solarTimeProvider.GetSolarTimes(cityInfo.Latitude, cityInfo.Longitude, date, tzid), date, cityInfo);
+                    await _solarTimeInfoRepository.Add(solarTimeInfo);
+                }
                 _logger.LogInformation("Getting sunrise time was successful!");
-                return Ok(solarTimes.sunrise);
+                return Ok(solarTimeInfo.Sunrise);
             }
             catch (Exception e)
             {

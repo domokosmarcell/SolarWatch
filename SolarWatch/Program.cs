@@ -4,6 +4,7 @@ using SolarWatch.Services.JsonProcessors;
 using SolarWatch.Data;
 using Microsoft.EntityFrameworkCore;
 using SolarWatch.Models;
+using SolarWatch.Services.Repositories;
 
 namespace SolarWatch
 {
@@ -27,6 +28,8 @@ namespace SolarWatch
             builder.Services.AddSingleton<IGeocodeJsonProcessor, GeocodeJsonProcessor>();
             builder.Services.AddSingleton<ISolarTimeJsonProcessor, SolarTimeJsonProcessor>();
             builder.Services.AddSingleton<IHttpClient, HttpClientWrapper>();
+            builder.Services.AddScoped<ICityRepository, CityRepository>();
+            builder.Services.AddScoped<ISolarTimeInfoRepository, SolarTimeInfoRepository>();
             builder.Services.AddDbContext<SolarWatchContext>(options => 
             {
                 options.UseSqlServer(connectionString);
@@ -34,7 +37,19 @@ namespace SolarWatch
 
             var app = builder.Build();
 
+            ApplyMigrations(app);
+
             SeedDb(app);
+
+            static void ApplyMigrations(WebApplication webApplication)
+            {
+                using var scope = webApplication.Services.CreateScope();
+                var context = scope.ServiceProvider.GetService<SolarWatchContext>();
+                if (context.Database.GetPendingMigrations().Any())
+                {
+                    context.Database.Migrate();
+                }
+            }
 
             static void SeedDb(WebApplication webApplication)
             {

@@ -1,11 +1,12 @@
 ﻿
 using System.Text.Json;
+using SolarWatch.Models;
 
 namespace SolarWatch.Services.JsonProcessors
 {
     public class SolarTimeJsonProcessor : ISolarTimeJsonProcessor
     {
-        public (TimeOnly, TimeOnly) ProcessSolarTimeInfo(string solarTimeInfo, DateOnly date)
+        public SolarTimeInfo ProcessSolarTimeInfo(string solarTimeInfo, DateOnly date, City city)
         {
             JsonDocument json = JsonDocument.Parse(solarTimeInfo);
             var solarTimeInfoElement = json.RootElement;
@@ -15,8 +16,17 @@ namespace SolarWatch.Services.JsonProcessors
             var resultsElement = solarTimeInfoElement.GetProperty("results");
             var sunrise = GetTimeFromDateTimeOffset(resultsElement.GetProperty("sunrise").GetDateTimeOffset());
             var sunset = GetTimeFromDateTimeOffset(resultsElement.GetProperty("sunset").GetDateTimeOffset());
+            var tzid = solarTimeInfoElement.GetProperty("tzid").GetString();
 
-            return (sunrise, sunset);
+            var newSolarTimeInfo = new SolarTimeInfo()
+            {
+                City = city,
+                Date = date,
+                Sunrise = sunrise,
+                Sunset = sunset,
+                Tzid = tzid
+            };
+            return newSolarTimeInfo;
         }
 
         private static TimeOnly GetTimeFromDateTimeOffset(DateTimeOffset time)
