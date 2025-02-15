@@ -37,17 +37,25 @@ namespace SolarWatch
 
             var app = builder.Build();
 
+            ApplyMigrations(app);
+
             SeedDb(app);
+
+            static void ApplyMigrations(WebApplication webApplication)
+            {
+                using var scope = webApplication.Services.CreateScope();
+                var context = scope.ServiceProvider.GetService<SolarWatchContext>();
+                if (context.Database.GetPendingMigrations().Any())
+                {
+                    context.Database.Migrate();
+                }
+            }
 
             static void SeedDb(WebApplication webApplication)
             {
                 using (var scope = webApplication.Services.CreateScope())
                 {
                     var context = scope.ServiceProvider.GetService<SolarWatchContext>();
-                    if (!context.Database.GetPendingMigrations().Any())
-                    {
-                        context.Database.Migrate();
-                    }
 
                     if (context.Cities.Any() || context.SolarTimeInfos.Any())
                     {
