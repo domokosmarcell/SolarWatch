@@ -20,7 +20,10 @@ namespace SolarWatch
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var connectionString = builder.Configuration.GetConnectionString("SolarWatchDatabase");
+            var connectionString = builder.Configuration["ConnectionStrings:SolarWatchDatabase"];
+            var validIssuer = builder.Configuration["JwtTokenValidators:ValidIssuer"];
+            var validAudience = builder.Configuration["JwtTokenValidators:ValidAudience"];
+            var secretKey = builder.Configuration["JwtTokenValidators:SecretKey"];
 
             // Add services to the container.
 
@@ -63,6 +66,7 @@ namespace SolarWatch
             builder.Services.AddScoped<ICityRepository, CityRepository>();
             builder.Services.AddScoped<ISolarTimeInfoRepository, SolarTimeInfoRepository>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddDbContext<SolarWatchContext>(options => 
             {
                 options.UseSqlServer(connectionString);
@@ -83,10 +87,10 @@ namespace SolarWatch
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = "",
-                    ValidAudience = "",
+                    ValidIssuer = validIssuer,
+                    ValidAudience = validAudience,
                     IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes("")
+                        Encoding.UTF8.GetBytes(secretKey)
                     ),
                 };
             });
