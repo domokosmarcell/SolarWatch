@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
+using SolarWatch.Services.Authentication;
 
 namespace SolarWatch
 {
@@ -61,6 +62,7 @@ namespace SolarWatch
             builder.Services.AddSingleton<IHttpClient, HttpClientWrapper>();
             builder.Services.AddScoped<ICityRepository, CityRepository>();
             builder.Services.AddScoped<ISolarTimeInfoRepository, SolarTimeInfoRepository>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddDbContext<SolarWatchContext>(options => 
             {
                 options.UseSqlServer(connectionString);
