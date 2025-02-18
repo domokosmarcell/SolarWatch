@@ -67,6 +67,7 @@ namespace SolarWatch
             builder.Services.AddScoped<ISolarTimeInfoRepository, SolarTimeInfoRepository>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<ITokenService, TokenService>();
+            builder.Services.AddScoped<AuthenticationSeeder>();
             builder.Services.AddDbContext<SolarWatchContext>(options => 
             {
                 options.UseSqlServer(connectionString);
@@ -106,9 +107,12 @@ namespace SolarWatch
                 options.Password.RequireUppercase = true;
                 options.Password.RequireLowercase = true;
             })
+            .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<UsersContext>();
 
             var app = builder.Build();
+
+            CreateRoles(app);
 
             ApplyMigrations(app);
 
@@ -152,6 +156,13 @@ namespace SolarWatch
 
                     context.SaveChanges();
                 }
+            }
+
+            static void CreateRoles(WebApplication webApplication)
+            {
+                using var scope = webApplication.Services.CreateScope();
+                var authenticationSeeder = scope.ServiceProvider.GetRequiredService<AuthenticationSeeder>();
+                authenticationSeeder.AddRoles();
             }
 
 
