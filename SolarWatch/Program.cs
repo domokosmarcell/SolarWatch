@@ -117,10 +117,15 @@ namespace SolarWatch
             static void ApplyMigrations(WebApplication webApplication)
             {
                 using var scope = webApplication.Services.CreateScope();
-                var context = scope.ServiceProvider.GetService<SolarWatchContext>();
-                if (context.Database.GetPendingMigrations().Any())
+                var solarWatchContext = scope.ServiceProvider.GetService<SolarWatchContext>();
+                var usersContext = scope.ServiceProvider.GetService<UsersContext>();
+                if (solarWatchContext.Database.GetPendingMigrations().Any())
                 {
-                    context.Database.Migrate();
+                    solarWatchContext.Database.Migrate();
+                }
+                if (usersContext.Database.GetPendingMigrations().Any())
+                {
+                    usersContext.Database.Migrate();
                 }
             }
 
