@@ -35,7 +35,7 @@ namespace SolarWatch.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<ActionResult<AuthResponse>> Authenticate([FromBody] AuthRequest request)
+        public async Task<ActionResult<AuthResponse>> Authenticate(AuthRequest request)
         {
             if (!ModelState.IsValid)
             {

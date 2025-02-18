@@ -112,9 +112,9 @@ namespace SolarWatch
 
             var app = builder.Build();
 
-            CreateRoles(app);
-
             ApplyMigrations(app);
+
+            CreateRoles(app);
 
             SeedDb(app);
 
@@ -163,6 +163,7 @@ namespace SolarWatch
                 using var scope = webApplication.Services.CreateScope();
                 var authenticationSeeder = scope.ServiceProvider.GetRequiredService<AuthenticationSeeder>();
                 authenticationSeeder.AddRoles();
+                authenticationSeeder.AddAdmin();
             }
 
 

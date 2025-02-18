@@ -16,11 +16,11 @@ namespace SolarWatch.Services.Authentication
             _configuration = configuration;
         }
 
-        public string CreateToken(IdentityUser user)
+        public string CreateToken(IdentityUser user, string role)
         {
             var expiration = DateTime.UtcNow.AddMinutes(ExpirationMinutes);
             var token = CreateJwtToken(
-                CreateClaims(user),
+                CreateClaims(user, role),
                 CreateSigningCredentials(),
                 expiration
             );
@@ -38,19 +38,24 @@ namespace SolarWatch.Services.Authentication
                 signingCredentials: credentials
             );
 
-        private static List<Claim> CreateClaims(IdentityUser user)
+        private static List<Claim> CreateClaims(IdentityUser user, string? role)
         {
             try
             {
                 var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, EpochTime.GetIntDate(DateTime.UtcNow).ToString(CultureInfo.InvariantCulture), ClaimValueTypes.Integer64),
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Email, user.Email)
-            };
+                {
+                    new(JwtRegisteredClaimNames.Sub, user.Id),
+                    new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new(JwtRegisteredClaimNames.Iat, EpochTime.GetIntDate(DateTime.UtcNow).ToString(CultureInfo.InvariantCulture), ClaimValueTypes.Integer64),
+                    new(ClaimTypes.NameIdentifier, user.Id),
+                    new(ClaimTypes.Name, user.UserName),
+                    new(ClaimTypes.Email, user.Email)
+                };
+
+                if (role != null)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+                }
                 return claims;
             }
             catch (Exception e)
