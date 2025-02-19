@@ -4,6 +4,10 @@
 
 SolarWatch is a webpage designed for showing you the sunset/sunrise time of the provided city at the provided date using the given timezone information. 
 
+### Key Features:
+- **User Registration and Login**: Securely register and log in to access features.
+- **Get the Sunrise/Sunset Time**: Provide city name and country code where the city is located (optionally state name as well in places where its needed). You have to provide a date and a time zone information as well. For the valid country codes see this website: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2. For the valid time zones see this website: https://www.php.net/manual/en/timezones.php.
+
 ## Built With
 
 - **Backend**: [ASP.NET Core](https://dotnet.microsoft.com/en-us/apps/aspnet) (with Identity Framework and Entity Framework)
@@ -47,6 +51,19 @@ Make sure you have the following installed:
     cd SolarWatch
     dotnet run --project SolarWatch.csproj --launch-profile https
   ```
+3. After this navigate to the frontend folder:
+
+  ```sh
+    cd ..
+    cd SolarWatchFrontend 
+  ```
+4. Intall necessary node packages and start the server:
+
+  ```sh
+    npm i
+    npm run dev
+  ```
+5. Access the app: Open your browser, navigate to http://localhost:5173.
 
 
 <!--Links for logos! -->
