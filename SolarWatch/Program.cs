@@ -5,6 +5,12 @@ using SolarWatch.Data;
 using Microsoft.EntityFrameworkCore;
 using SolarWatch.Models;
 using SolarWatch.Services.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.OpenApi.Models;
+using SolarWatch.Services.Authentication;
 
 namespace SolarWatch
 {
@@ -14,40 +20,155 @@ namespace SolarWatch
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var connectionString = builder.Configuration.GetConnectionString("SolarWatchDatabase");
+            var connectionString = builder.Configuration["ConnectionStrings:SolarWatchDatabase"];
+            var validIssuer = builder.Configuration["JwtTokenValidators:ValidIssuer"];
+            var validAudience = builder.Configuration["JwtTokenValidators:ValidAudience"];
+            var secretKey = builder.Configuration["JwtTokenValidators:SecretKey"];
 
-            // Add services to the container.
-
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-
-            builder.Services.AddSingleton<IGeocodeProvider, GeocodeProvider>();
-            builder.Services.AddSingleton<ISolarTimeProvider, SolarTimeProvider>();
-            builder.Services.AddSingleton<IGeocodeJsonProcessor, GeocodeJsonProcessor>();
-            builder.Services.AddSingleton<ISolarTimeJsonProcessor, SolarTimeJsonProcessor>();
-            builder.Services.AddSingleton<IHttpClient, HttpClientWrapper>();
-            builder.Services.AddScoped<ICityRepository, CityRepository>();
-            builder.Services.AddScoped<ISolarTimeInfoRepository, SolarTimeInfoRepository>();
-            builder.Services.AddDbContext<SolarWatchContext>(options => 
-            {
-                options.UseSqlServer(connectionString);
-            });
+            AddServices(builder);
+            ConfigureSwagger(builder);
+            AddDbContexts(builder, connectionString);
+            AddAuthentication(builder, validIssuer, validAudience, secretKey);
+            AddIdentity(builder);
 
             var app = builder.Build();
 
             ApplyMigrations(app);
 
+            CreateRoles(app);
+
             SeedDb(app);
+
+
+            // Configure the HTTP request pipeline.
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
+
+            app.UseHttpsRedirection();
+
+            app.UseAuthentication();
+
+            app.UseAuthorization();
+
+            app.MapControllers();
+
+            app.Run();
+
+
+
+            static void AddServices(WebApplicationBuilder builder)
+            {
+                builder.Services.AddControllers();
+                builder.Services.AddEndpointsApiExplorer();
+                builder.Services.AddSingleton<IGeocodeProvider, GeocodeProvider>();
+                builder.Services.AddSingleton<ISolarTimeProvider, SolarTimeProvider>();
+                builder.Services.AddSingleton<IGeocodeJsonProcessor, GeocodeJsonProcessor>();
+                builder.Services.AddSingleton<ISolarTimeJsonProcessor, SolarTimeJsonProcessor>();
+                builder.Services.AddSingleton<IHttpClient, HttpClientWrapper>();
+                builder.Services.AddScoped<ICityRepository, CityRepository>();
+                builder.Services.AddScoped<ISolarTimeInfoRepository, SolarTimeInfoRepository>();
+                builder.Services.AddScoped<IAuthService, AuthService>();
+                builder.Services.AddScoped<ITokenService, TokenService>();
+                builder.Services.AddScoped<AuthenticationSeeder>();
+            }
+
+            static void ConfigureSwagger(WebApplicationBuilder builder)
+            {
+                builder.Services.AddSwaggerGen(options =>
+                {
+                    options.SwaggerDoc("v1", new OpenApiInfo { Title = "SolarWatch API", Version = "v1" });
+                    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                        {
+                            In = ParameterLocation.Header,
+                            Description = "Please enter a valid token",
+                            Name = "Authorization",
+                            Type = SecuritySchemeType.Http,
+                            BearerFormat = "JWT",
+                            Scheme = "Bearer"
+                        });
+                    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                        {
+                            {
+                                new OpenApiSecurityScheme
+                                {
+                                    Reference = new OpenApiReference
+                                    {
+                                        Type=ReferenceType.SecurityScheme,
+                                        Id="Bearer"
+                                    }
+                                },
+                                new string[]{}
+                            }
+                        });
+                });
+            }
+
+            static void AddDbContexts(WebApplicationBuilder builder, string connectionString)
+            {
+                builder.Services.AddDbContext<SolarWatchContext>(options =>
+                {
+                    options.UseSqlServer(connectionString);
+                });
+                builder.Services.AddDbContext<UsersContext>(options =>
+                {
+                    options.UseSqlServer(connectionString);
+                });
+            }
+
+            static void AddAuthentication(WebApplicationBuilder builder, string validIssuer, string validAudience, string secretKey)
+            {
+                builder.Services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ClockSkew = TimeSpan.Zero,
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = validIssuer,
+                        ValidAudience = validAudience,
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(secretKey)
+                        ),
+                    };
+                });
+            }
+
+            static void AddIdentity(WebApplicationBuilder builder)
+            {
+                builder.Services
+                .AddIdentityCore<IdentityUser>(options =>
+                {
+                    options.SignIn.RequireConfirmedAccount = false;
+                    options.User.RequireUniqueEmail = true;
+                    options.Password.RequireDigit = true;
+                    options.Password.RequiredLength = 6;
+                    options.Password.RequireNonAlphanumeric = true;
+                    options.Password.RequireUppercase = true;
+                    options.Password.RequireLowercase = true;
+                })
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<UsersContext>();
+            }
 
             static void ApplyMigrations(WebApplication webApplication)
             {
                 using var scope = webApplication.Services.CreateScope();
-                var context = scope.ServiceProvider.GetService<SolarWatchContext>();
-                if (context.Database.GetPendingMigrations().Any())
+                var solarWatchContext = scope.ServiceProvider.GetService<SolarWatchContext>();
+                var usersContext = scope.ServiceProvider.GetService<UsersContext>();
+                if (solarWatchContext.Database.GetPendingMigrations().Any())
                 {
-                    context.Database.Migrate();
+                    solarWatchContext.Database.Migrate();
+                }
+                if (usersContext.Database.GetPendingMigrations().Any())
+                {
+                    usersContext.Database.Migrate();
                 }
             }
 
@@ -76,22 +197,17 @@ namespace SolarWatch
                 }
             }
 
-
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            static void CreateRoles(WebApplication webApplication)
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                using var scope = webApplication.Services.CreateScope();
+                var authenticationSeeder = scope.ServiceProvider.GetRequiredService<AuthenticationSeeder>();
+                authenticationSeeder.AddRoles();
+                authenticationSeeder.AddAdmin();
             }
 
-            app.UseHttpsRedirection();
 
-            app.UseAuthorization();
-
-
-            app.MapControllers();
-
-            app.Run();
         }
     }
+
+
 }

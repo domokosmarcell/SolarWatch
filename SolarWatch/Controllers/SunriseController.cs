@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SolarWatch.Models;
 using SolarWatch.Services.ApiProviders;
@@ -32,6 +33,7 @@ namespace SolarWatch.Controllers
         }
 
         [HttpGet("Get")]
+        [Authorize(Roles = "User,Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<TimeOnly>> GetSunriseTime([Required] DateOnly date, [Required] string city, string? tzid) 
