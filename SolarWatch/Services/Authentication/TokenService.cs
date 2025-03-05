@@ -60,7 +60,6 @@ namespace SolarWatch.Services.Authentication
             }
             catch (Exception e)
             {
-                Console.WriteLine(e); //not necessary
                 throw;
             }
         }
