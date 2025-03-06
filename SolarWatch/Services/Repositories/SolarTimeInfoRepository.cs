@@ -34,5 +34,18 @@ namespace SolarWatch.Services.Repositories
             await _context.SaveChangesAsync();
             return solarTimeInfo; 
         }
+        public async Task<int> Delete(int id)
+        {
+            var solarTimeInfo = await _context.SolarTimeInfos.FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception("SolartimeInfo you want to delete cannot be found!!");
+            _context.SolarTimeInfos.Remove(solarTimeInfo);
+            await _context.SaveChangesAsync();
+            return solarTimeInfo.Id;
+        }
+
+        public async Task<IEnumerable<SolarTimeInfo>?> GetAll()
+        {
+            var solarTimeInfos = await _context.SolarTimeInfos.ToArrayAsync();
+            return solarTimeInfos;
+        }
     }
 }
