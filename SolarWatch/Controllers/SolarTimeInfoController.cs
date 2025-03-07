@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SolarWatch.DTOs;
 using SolarWatch.Models;
 using SolarWatch.Services.Repositories;
 
@@ -12,11 +13,13 @@ namespace SolarWatch.Controllers
     {
         private readonly ILogger<SolarTimeInfoController> _logger;
         private readonly ISolarTimeInfoRepository _solarTimeInfoRepository;
+        private readonly ICityRepository _cityRepository;
 
-        public SolarTimeInfoController(ILogger<SolarTimeInfoController> logger, ISolarTimeInfoRepository solarTimeInfoRepository)
+        public SolarTimeInfoController(ILogger<SolarTimeInfoController> logger, ISolarTimeInfoRepository solarTimeInfoRepository, ICityRepository cityRepository)
         {
             _logger = logger;
             _solarTimeInfoRepository = solarTimeInfoRepository;
+            _cityRepository = cityRepository;
         }
 
         [HttpGet("GetAll")]
@@ -39,10 +42,19 @@ namespace SolarWatch.Controllers
         [HttpPost("Add")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<SolarTimeInfo>> Add(SolarTimeInfo solarTimeInfo)
+        public async Task<ActionResult<SolarTimeInfo>> Add(SolarTimeInfoDTO solarTimeInfoDTO)
         {
             try
             {
+                var cityAsNavigationProp = await _cityRepository.GetByName(solarTimeInfoDTO.CityName) ?? throw new Exception($"The city that you want to create a {nameof(SolarTimeInfo)} object for does not exist in the database!!");
+                SolarTimeInfo solarTimeInfo = new()
+                {
+                    City = cityAsNavigationProp,
+                    Date = solarTimeInfoDTO.Date,
+                    Sunrise = solarTimeInfoDTO.Sunrise,
+                    Sunset = solarTimeInfoDTO.Sunset,
+                    Tzid = solarTimeInfoDTO.Tzid
+                };
                 SolarTimeInfo addedSolarTimeInfo = await _solarTimeInfoRepository.Add(solarTimeInfo);
                 return CreatedAtAction(nameof(Add), addedSolarTimeInfo);
             }
@@ -56,10 +68,20 @@ namespace SolarWatch.Controllers
         [HttpPut("Update")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<SolarTimeInfo>> Update(SolarTimeInfo solarTimeInfo)
+        public async Task<ActionResult<SolarTimeInfo>> Update(SolarTimeInfoDTO solarTimeInfoDTO)
         {
             try
             {
+                var cityAsNavigationProp = await _cityRepository.GetByName(solarTimeInfoDTO.CityName) ?? throw new Exception($"The city that you want to attach to the specified {nameof(SolarTimeInfo)} object does not exist in the database!!");
+                SolarTimeInfo solarTimeInfo = new()
+                {
+                    Id = solarTimeInfoDTO.Id,
+                    City = cityAsNavigationProp,
+                    Date = solarTimeInfoDTO.Date,
+                    Sunrise = solarTimeInfoDTO.Sunrise,
+                    Sunset = solarTimeInfoDTO.Sunset,
+                    Tzid = solarTimeInfoDTO.Tzid
+                };
                 SolarTimeInfo updatedSolarTimeInfo = await _solarTimeInfoRepository.Update(solarTimeInfo);
                 return Ok(updatedSolarTimeInfo);
             }
