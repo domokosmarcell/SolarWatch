@@ -44,7 +44,7 @@ namespace SolarWatch.Services.Repositories
 
         public async Task<IEnumerable<SolarTimeInfo>?> GetAll()
         {
-            var solarTimeInfos = await _context.SolarTimeInfos.ToArrayAsync();
+            var solarTimeInfos = await _context.SolarTimeInfos.Include(x => x.City).ToArrayAsync();
             return solarTimeInfos;
         }
     }

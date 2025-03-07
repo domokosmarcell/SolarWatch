@@ -10,10 +10,10 @@ namespace SolarWatch.Controllers
     [Authorize(Roles = "Admin")]
     public class SolarTimeInfoController : ControllerBase
     {
-        private readonly ILogger _logger;
+        private readonly ILogger<SolarTimeInfoController> _logger;
         private readonly ISolarTimeInfoRepository _solarTimeInfoRepository;
 
-        public SolarTimeInfoController(ILogger logger, ISolarTimeInfoRepository solarTimeInfoRepository)
+        public SolarTimeInfoController(ILogger<SolarTimeInfoController> logger, ISolarTimeInfoRepository solarTimeInfoRepository)
         {
             _logger = logger;
             _solarTimeInfoRepository = solarTimeInfoRepository;
@@ -70,7 +70,7 @@ namespace SolarWatch.Controllers
             }
         }
 
-        [HttpDelete("Delete/:id")]
+        [HttpDelete("Delete/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<int>> Delete(int id)

@@ -10,10 +10,10 @@ namespace SolarWatch.Controllers
     [Authorize(Roles = "Admin")]
     public class CityController : ControllerBase
     {
-        private readonly ILogger _logger;
+        private readonly ILogger<CityController> _logger;
         private readonly ICityRepository _cityRepository;
 
-        public CityController(ILogger logger, ICityRepository cityRepository)
+        public CityController(ILogger<CityController> logger, ICityRepository cityRepository)
         {
             _logger = logger;
             _cityRepository = cityRepository;
@@ -70,7 +70,7 @@ namespace SolarWatch.Controllers
             }
         }
 
-        [HttpDelete("Delete/:id")]
+        [HttpDelete("Delete/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<int>> Delete(int id)
