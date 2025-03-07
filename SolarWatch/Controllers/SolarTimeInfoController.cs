@@ -26,8 +26,8 @@ namespace SolarWatch.Controllers
         {
             try
             {
-                var cities = await _solarTimeInfoRepository.GetAll();
-                return Ok(cities);
+                var solarTimeInfos = await _solarTimeInfoRepository.GetAll();
+                return Ok(solarTimeInfos);
             }
             catch (Exception e)
             {
