@@ -18,9 +18,23 @@ namespace SolarWatch.Services.Repositories
             return city;
         }
 
+        public async Task<int> Delete(int id)
+        {
+            var city = await _context.Cities.FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception("The city you want to delete cannot be found!!");
+            _context.Cities.Remove(city);
+            await _context.SaveChangesAsync();
+            return city.Id;
+        }
+
+        public async Task<IEnumerable<City>?> GetAll()
+        {
+            var cities = await _context.Cities.ToArrayAsync();
+            return cities;
+        }
+
         public async Task<City?> GetByName(string city)
         {
-            string[] cityInfo = (string[])SplitString(city);
+            string[] cityInfo = city.Split(',');
             City? foundCity = null;
             if (cityInfo.Length == 2)
             {
@@ -39,10 +53,11 @@ namespace SolarWatch.Services.Repositories
             return foundCity;
         }
 
-        private static IEnumerable<string> SplitString(string city)
+        public async Task<City> Update(City city)
         {
-            string[] cityInfo = city.Split(',');
-            return cityInfo;
+            _context.Cities.Update(city);
+            await _context.SaveChangesAsync();
+            return city;
         }
     }
 }
