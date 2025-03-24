@@ -7,7 +7,6 @@ namespace SolarWatch.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin")]
     public class CityController : ControllerBase
     {
         private readonly ILogger<CityController> _logger;
@@ -20,6 +19,7 @@ namespace SolarWatch.Controllers
         }
 
         [HttpGet("GetAll")]
+        [Authorize(Roles = "Admin,User")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<City>?>> GetAll()
@@ -37,6 +37,7 @@ namespace SolarWatch.Controllers
         }
 
         [HttpPost("Add")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<City>> Add(City city)
@@ -54,6 +55,7 @@ namespace SolarWatch.Controllers
         }
 
         [HttpPut("Update")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<City>> Update(City city)
@@ -71,6 +73,7 @@ namespace SolarWatch.Controllers
         }
 
         [HttpDelete("Delete/{id}")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<int>> Delete(int id)
