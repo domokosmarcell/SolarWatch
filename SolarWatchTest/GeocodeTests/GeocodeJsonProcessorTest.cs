@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace SolarWatchTest.GeocodeTests
         }
 
         [Test]
-        public void ProcessGeocodeInfoThrowsExceptionIfApiResponseIsAnErrorObj()
+        public void ProcessGeocodeInfo_ThrowsException_IfApiResponseIsAnErrorObj()
         {
             var cityInput = "London,England,GB";
             var exampleErrorFromApi = @"{
@@ -35,7 +36,7 @@ namespace SolarWatchTest.GeocodeTests
 
 
         [Test]
-        public void ProcessGeocodeInfoThrowsExceptionIfGeocodeInfoIsAnEmptyArray()
+        public void ProcessGeocodeInfo_ThrowsException_IfGeocodeInfoIsAnEmptyArray()
         {
             var nonexistentCityInput = "asd";
             var emptyGeocodeInfo = "[]";
@@ -48,7 +49,7 @@ namespace SolarWatchTest.GeocodeTests
         }
 
         [Test]
-        public void ProcessGeocodeInfoThrowsExceptionIfApiProvidesWrongCity()
+        public void ProcessGeocodeInfo_ThrowsException_IfApiProvidesWrongCity()
         {
             var cityInput = "Ao"; // you want to retrieve a small village in estonia, but you will get a japanese city Yao
             var geocodeInfo = "[{ \"name\": \"Yao\"}]"; // dummy geocodeInfo with only the name bacause it will throw an error(not the same as the input)
@@ -61,7 +62,7 @@ namespace SolarWatchTest.GeocodeTests
         }
 
         [Test]
-        public void ProcessGeocodeInfoReturnsLatitudeAndLongitudeIfEverythingIsOk()
+        public void ProcessGeocodeInfo_ReturnsCityInfo_IfEverythingIsOk()
         {
             var cityInput = "Paks,HU";
             var geocodeInfo = @"
@@ -90,7 +91,13 @@ namespace SolarWatchTest.GeocodeTests
 
             var result = _geocodeJsonProcessor.ProcessGeocodeInfo(geocodeInfo, cityInput);
 
-            Assert.That(result, Is.EqualTo(validCity));
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.Name, Is.EqualTo(validCity.Name));
+                Assert.That(result.Latitude, Is.EqualTo(validCity.Latitude));
+                Assert.That(result.Longitude, Is.EqualTo(validCity.Longitude));
+                Assert.That(result.Country, Is.EqualTo(validCity.Country));
+            });
         }
     }
 }
