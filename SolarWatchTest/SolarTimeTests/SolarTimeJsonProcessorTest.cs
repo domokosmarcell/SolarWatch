@@ -100,7 +100,14 @@ namespace SolarWatchTest.SolarTimeTests
 
             var result = _solarTimeJsonProcessor.ProcessSolarTimeInfo(fakeSolarTimeInfo, randomValidDate, _city);
 
-            Assert.That(result, Is.EqualTo(validSolarTimeInfo));
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.City, Is.EqualTo(validSolarTimeInfo.City));
+                Assert.That(result.Date, Is.EqualTo(validSolarTimeInfo.Date));
+                Assert.That(result.Sunrise, Is.EqualTo(validSolarTimeInfo.Sunrise));
+                Assert.That(result.Sunset, Is.EqualTo(validSolarTimeInfo.Sunset));
+                Assert.That(result.Tzid, Is.EqualTo(validSolarTimeInfo.Tzid));
+            });
         }
 
     }

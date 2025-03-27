@@ -185,7 +185,8 @@ namespace SolarWatchTest
             Assert.Multiple(() =>
             {
                 Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
-                Assert.That(result.Value, Is.EqualTo(_solarTimeInfoObject.Sunset));
+                var okResult = (OkObjectResult)result.Result;
+                Assert.That(okResult.Value, Is.EqualTo(_solarTimeInfoObject.Sunset));
             });
         }
         [Test]
@@ -199,7 +200,8 @@ namespace SolarWatchTest
             Assert.Multiple(() =>
             {
                 Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
-                Assert.That(result.Value, Is.EqualTo(_solarTimeInfoObject.Sunset));
+                var okResult = (OkObjectResult)result.Result;
+                Assert.That(okResult.Value, Is.EqualTo(_solarTimeInfoObject.Sunset));
             });
         }
     }

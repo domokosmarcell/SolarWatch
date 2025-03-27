@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -185,7 +186,8 @@ namespace SolarWatchTest
             Assert.Multiple(() =>
             {
                 Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
-                Assert.That(result.Value, Is.EqualTo(_solarTimeInfoObject.Sunrise));
+                var okResult = (OkObjectResult)result.Result;
+                Assert.That(okResult.Value, Is.EqualTo(_solarTimeInfoObject.Sunrise));
             });
         }
         [Test]
@@ -199,7 +201,8 @@ namespace SolarWatchTest
             Assert.Multiple(() =>
             {
                 Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
-                Assert.That(result.Value, Is.EqualTo(_solarTimeInfoObject.Sunrise));
+                var okResult = (OkObjectResult)result.Result;
+                Assert.That(okResult.Value, Is.EqualTo(_solarTimeInfoObject.Sunrise));
             });
         }
     }
