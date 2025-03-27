@@ -193,7 +193,9 @@ namespace SolarWatchTest
         {
             _cityRepositoryMock.Setup(x => x.GetByName(_cityInput)).ReturnsAsync(_cityObject);
             _solarTimeInfoRepositoryMock.Setup(x => x.GetByCityDateAndTzid(_cityObject, _dateInput, _tzidInput)).ReturnsAsync(_solarTimeInfoObject);
+
             var result = await _controller.GetSunriseTime(_dateInput, _cityInput, _tzidInput);
+
             Assert.Multiple(() =>
             {
                 Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
